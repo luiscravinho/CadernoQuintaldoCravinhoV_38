@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Caderno de Campo Quintal do Cravinho</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg:#f4f6f5; --card:#fff; --green:#2e7d32; --blue:#1565c0; --red:#c62828; --gray:#455a64; --purple:#6a1b9a;
+}
+body{font-family:Arial, sans-serif;background:var(--bg);padding:14px;margin:0}
+h1{text-align:center;color:#1b5e20;margin:10px 0 14px}
+.topbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:10px 0}
+.topbar .left,.topbar .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.autosave{display:flex;align-items:center;gap:6px;font-size:12px;color:#234;background:#e8f5e9;padding:6px 10px;border-radius:999px;user-select:none}
+.autosave input{transform:scale(1.1)}
+button{background:var(--green);color:#fff;border:none;border-radius:8px;padding:10px 12px;font-size:14px;cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+button.sec{background:var(--gray)}
+button.blue{background:var(--blue)}
+button.warn{background:var(--red)}
+button.purp{background:var(--purple)}
+.card{background:var(--card);padding:16px;margin-bottom:14px;border-radius:10px;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.small{font-size:12px;color:#555}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row > *{flex:1;min-width:160px}
+label{display:block;margin-top:8px}
+select,input,textarea{width:100%;padding:9px;margin-top:4px;box-sizing:border-box;border:1px solid #d7ddd9;border-radius:8px;background:#fff}
+textarea{min-height:80px;resize:vertical}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 16px}
+.tabbtn{background:#e8f5e9;color:#1b5e20;border:1px solid #cfe6d2}
+.tabbtn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.hidden{display:none !important}
+hr{border:none;border-top:1px solid #dbe7db;margin:12px 0}
+
+.list{border:1px solid #ddd;border-radius:10px;overflow:hidden}
+.cabecalho{background:#e8f5e9;padding:10px;font-weight:bold;display:flex;justify-content:space-between;cursor:pointer;gap:10px}
+.list.active .cabecalho{background:#c8e6c9}
+.item{border-top:1px solid #eee;padding:10px;cursor:pointer}
+.item.selected{background:#fffde7}
+
+.cfgitem{display:flex;gap:8px;align-items:center}
+.cfgitem input{flex:1}
+.cfgitem .miniBtn{padding:6px 10px;font-size:12px}
+.chk{transform:scale(1.2);margin-right:8px}
+.badge{display:inline-block;background:#eef5ee;border:1px solid #d7e7d8;border-radius:999px;padding:2px 8px;font-size:12px;color:#2e7d32}
+.thumb{width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid #ddd;cursor:pointer}
+.imgwrap{position:relative;display:inline-block;margin:4px}
+.delimg{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-weight:bold;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:10px;z-index:50}
+.modal img{max-width:95vw;max-height:92vh;border-radius:12px}
+.kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12px; background:#f2f4f2; padding:2px 6px; border-radius:6px; border:1px solid #dde3de}
+
+
+/* v1.0.31 — Calendário Açores, fases tradicionais de fruticultura e relatórios */
+.rot-recomendacoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.rot-sugestao{padding:10px;border:1px solid #cfe5d2;background:#f3faf3;border-radius:8px}
+.rot-table-wrap{overflow-x:auto}
+.rot-tabela{width:100%;border-collapse:collapse;font-size:13px}
+.rot-tabela th,.rot-tabela td{border-bottom:1px solid #dce4dd;padding:8px;text-align:left;vertical-align:top}
+.rot-mini{width:auto;margin:2px;padding:5px 8px;font-size:12px}
+.calm-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;min-width:490px}
+.calm-semana{text-align:center;font-size:12px;font-weight:bold;color:#405b43;padding:5px}
+.calm-dia{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-height:80px;background:#fff;color:#294e32;border:1px solid #d2ded4;border-radius:8px;font-size:12px;padding:7px;min-width:0;white-space:normal;text-align:left}
+.calm-dia:hover{background:#f1f9f2}
+.calm-hoje{border-color:#1565c0}
+.calm-selecionado{border:2px solid #2e7d32;background:#e8f5e9}
+.calm-lua{font-size:19px}
+.calm-grupo{font-size:11px}
+.calm-evento{font-size:10px}
+.calm-detalhe{background:#eef5ee;padding:10px;border-radius:8px}
+.calm-detalhe h4{margin:3px 0 8px}
+.calm-trabalhos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin:10px 0}
+.calm-trabalho{background:#fff;border:1px solid #d2ded4;border-radius:8px;padding:9px}
+.calm-trabalho p{margin:6px 0 0;line-height:1.45}
+.calm-favoravel{border-color:#82bb8a;background:#f0faf0}
+.calm-lua-chip{display:inline-block;margin:7px 0 3px;padding:3px 8px;border:1px solid #c8d9cc;border-radius:999px;font-size:12px;background:#f7faf7;color:#254e2b}
+.calm-lua-chip.ok{color:#1b5e20;background:#dff1e2;border-color:#99cc9f;font-weight:600}
+.calm-guide{background:#f6faf7;border:1px solid #d7e4d9;padding:12px;border-radius:10px}
+.calm-guide-table{border-collapse:collapse;width:100%;font-size:12px}
+.calm-guide-table th,.calm-guide-table td{border-bottom:1px solid #dce7dd;padding:8px;text-align:left;vertical-align:top}
+.calm-guide-table th{background:#e9f4ec}
+@media(max-width:620px){.calm-guide-table{font-size:11px}}
+
+/* ==========================================================
+   v1.0.32 — Interface responsiva, preservando todos os registos
+   ========================================================== */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{max-width:1520px;margin:0 auto;overflow-x:hidden;line-height:1.45}
+button,summary{touch-action:manipulation}
+button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{
+  outline:3px solid #1976d2;outline-offset:2px
+}
+.qc-brand{display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:7px 4px}
+.qc-brand-icon{width:54px;height:54px;object-fit:contain;border-radius:12px;background:#fff}
+.qc-brand-name{flex:1;min-width:0}
+.qc-brand-name h1{margin:0;text-align:left;font-size:clamp(21px,2.3vw,29px);line-height:1.1}
+.qc-brand-name p{margin:3px 0 0;font-size:13px;color:#45634a}
+.qc-menu-top,.qc-bottom-nav,.qc-mobile-backdrop,.qc-mobile-drawer,.qc-mobile-hint,.qc-mobile-multiselect{display:none}
+.qc-files{flex:1;min-width:0}
+.qc-files summary,.qc-help summary{display:none}
+.qc-files .left{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.qc-help>.card{margin-bottom:14px}
+.tabs{gap:6px}
+.tabbtn{font-weight:600}
+.qc-mobile-backdrop[hidden],.qc-mobile-drawer[hidden]{display:none !important}
+
+@media(max-width:680px){
+  body{padding:0 10px calc(97px + env(safe-area-inset-bottom,0px));font-size:15px}
+  .qc-brand{position:sticky;top:0;z-index:35;margin:0 -10px 10px;padding:8px 12px;min-height:62px;
+    background:rgba(250,252,250,.97);border-bottom:1px solid #dce8de;box-shadow:0 2px 12px rgba(21,80,34,.07)}
+  .qc-brand-icon{width:42px;height:42px}
+  .qc-brand-name h1{font-size:18px;letter-spacing:-.25px}
+  .qc-brand-name p{font-size:11px;margin-top:2px}
+  .qc-menu-top{display:flex;flex:0 0 auto;align-items:center;justify-content:center;gap:5px;min-width:71px;
+    min-height:44px;padding:8px;border-radius:10px;background:#e7f3e9;color:#1b5e20;border:1px solid #c7ddca;font-size:14px;font-weight:700}
+  .topbar{gap:7px;padding:9px 11px;margin-bottom:8px;box-shadow:none;border:1px solid #e1ebe2}
+  .qc-files{flex:1 1 100%;min-width:0}
+  .qc-files summary,.qc-help summary{display:block;cursor:pointer;font-weight:700;color:#205d2c;
+    font-size:14px;padding:7px 5px;min-height:40px;list-style-position:inside}
+  .qc-files[open] summary,.qc-help[open] summary{margin-bottom:8px}
+  .qc-files .left{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .qc-files .left button{width:100%;min-width:0;font-size:13px;min-height:48px;line-height:1.3;overflow-wrap:anywhere}
+  .qc-files .left .autosave{grid-column:1/-1;width:100%;justify-content:center;margin:1px 0 0}
+  .topbar .right{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0}
+  .topbar #status{font-size:11px;line-height:1.35;min-width:0;overflow-wrap:anywhere}
+  .topbar #netStatus{flex-shrink:0;margin-right:0!important}
+  .qc-help{margin-bottom:10px;background:#fff;border:1px solid #e1ebe2;border-radius:10px;padding:6px 11px}
+  .qc-help>.card{padding:4px 3px 7px;margin:0;background:transparent;box-shadow:none;font-size:13px}
+  .tabs{display:none}
+  .qc-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:60;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:0;padding:4px max(7px,env(safe-area-inset-left,0px)) calc(5px + env(safe-area-inset-bottom,0px)) max(7px,env(safe-area-inset-right,0px));
+    background:#fff;border-top:1px solid #cee3d2;box-shadow:0 -2px 14px rgba(0,0,0,.07)}
+  .qc-bottom-nav button{min-width:0;min-height:57px;border:0;background:transparent;color:#536456;border-radius:12px;
+    padding:4px 1px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px}
+  .qc-bottom-nav button>span{font-size:21px;line-height:1.25}
+  .qc-bottom-nav button small{font-size:10px;font-weight:650;line-height:1.2;white-space:nowrap}
+  .qc-bottom-nav button.qc-active{background:#e1f1e5;color:#1b5e20}
+  .qc-mobile-backdrop{position:fixed;inset:0;z-index:95;background:rgba(12,37,20,.58)}
+  .qc-mobile-backdrop:not([hidden]){display:block}
+  .qc-mobile-drawer:not([hidden]){position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;flex-direction:column;
+    max-height:min(88dvh,840px);background:#f9fcfa;border-radius:22px 22px 0 0;
+    box-shadow:0 -12px 35px rgba(0,0,0,.19);padding:12px 14px calc(15px + env(safe-area-inset-bottom,0px));overflow:hidden}
+  .qc-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 12px;flex-shrink:0}
+  .qc-drawer-head strong{font-size:18px;color:#1b5e20}
+  .qc-close{background:#e5efe7;color:#1b5e20;font-size:19px;min-width:46px;min-height:44px}
+  .qc-drawer-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;overflow-y:auto;min-height:0;
+    overscroll-behavior:contain;padding:0 2px 10px}
+  .qc-drawer-links button{min-width:0;min-height:57px;text-align:left;font-size:13px;line-height:1.3;
+    background:#fff;color:#244b2b;border:1px solid #d9e7dc;padding:9px 10px;overflow-wrap:anywhere}
+  .qc-drawer-links button.qc-active{background:#dff0e3;border-color:#66a777;font-weight:700}
+  .qc-drawer-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:9px;border-top:1px solid #dfe8e1;flex-shrink:0}
+  .qc-drawer-tools button{min-width:0;min-height:46px;font-size:12px;line-height:1.25;padding:8px 6px}
+  body.qc-menu-open{overflow:hidden}
+  .card{padding:13px 12px;margin-bottom:11px;border-radius:12px;box-shadow:0 1px 4px rgba(25,65,35,.055)}
+  .card h3{font-size:17px;line-height:1.3;margin:4px 0 11px;color:#194e27}
+  .card h4{line-height:1.3}
+  .row{gap:8px}
+  .row>div{flex:1 1 100%;min-width:0}
+  .row>button{flex:1 1 calc(50% - 8px);min-width:0;white-space:normal;overflow-wrap:anywhere}
+  button{min-height:44px;font-size:14px;line-height:1.3}
+  select,input,textarea{min-height:45px;padding:10px 12px;font-size:16px;max-width:100%}
+  select[multiple]{min-height:148px}
+  input[type="checkbox"],input[type="radio"]{min-height:unset;width:auto;min-width:19px;height:19px;accent-color:#2e7d32}
+  input[type="file"]{font-size:14px;padding:8px}
+  .small{font-size:12px;line-height:1.5}
+  .list{min-width:0;max-width:100%;overflow-wrap:anywhere}
+  .cabecalho{gap:7px;flex-wrap:wrap;align-items:flex-start;font-size:14px}
+  .cabecalho>*{min-width:0}
+  .item{padding:10px 8px}
+  .item .row{gap:6px}
+  .item .row>div{flex:1 1 100%!important;min-width:0}
+  .item .row button{max-width:100%;min-height:42px;font-size:13px;padding:7px 9px}
+  .cfgitem{gap:6px}.cfgitem input{min-width:0}
+  .imgwrap{margin:7px 6px 7px 3px}
+  .thumb{width:78px;height:78px}
+  .delimg{width:30px;height:30px;top:-10px;right:-10px}
+  .qc-mobile-hint{display:block;margin:3px 0 8px;color:#526a56}
+  .qc-desktop-hint{display:none}
+  .qc-mobile-multiselect{display:block;margin:6px 0 10px;max-width:100%}
+  select.qc-multi-source{display:none !important}
+  .qc-mobile-multiselect summary{background:#fff;border:1px solid #bfcfc3;border-radius:10px;padding:11px 12px;
+    min-height:46px;color:#21552b;font-size:14px;font-weight:700;cursor:pointer}
+  .qc-mobile-multiselect[open] summary{border-radius:10px 10px 0 0;background:#eaf4ed}
+  .qc-multi-panel{border:1px solid #c5d8c9;border-top:0;background:#fff;border-radius:0 0 10px 10px;padding:9px}
+  .qc-multi-search{width:100%;font-size:16px;margin:0 0 8px}
+  .qc-multi-list{max-height:43dvh;overflow-y:auto;overscroll-behavior:contain;border:1px solid #edf0ed;border-radius:7px}
+  .qc-multi-item{display:flex;gap:12px;align-items:center;padding:10px 9px;margin:0;
+    border-bottom:1px solid #ecf2ee;min-height:45px;font-size:14px;color:#1c3e27;line-height:1.35;cursor:pointer}
+  .qc-multi-item:last-child{border-bottom:0}
+  .qc-multi-item[hidden]{display:none!important}
+  .qc-calendar-info{margin:0 0 10px}
+  .qc-calendar-info summary{cursor:pointer;min-height:39px;color:#2d6037;font-size:13px;font-weight:650;padding:7px 0}
+  .qc-calendar-info[open] .small{padding:3px 0 8px}
+  #view_cal>.card:first-child>.row>.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+  #view_cal>.card:first-child>.row>.row>button{font-size:12px;min-width:0;min-height:42px;padding:7px 3px}
+  .qc-multi-item input{margin:0;flex-shrink:0}
+  .qc-multi-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+  .qc-multi-footer button{min-height:39px;font-size:12px;padding:7px 10px}
+  .qc-multi-footer .small{max-width:180px}
+  .rot-table-wrap,#calm_guiaTecnicas{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .rot-tabela{min-width:560px;font-size:12px}
+  .calm-guide-table{min-width:600px;font-size:12px}
+  #calm_dias{max-width:100%;overflow-x:hidden!important}
+  .calm-grid{min-width:0;width:100%;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+  .calm-semana{padding:3px 0;font-size:11px}
+  .calm-dia{min-width:0;width:100%;min-height:72px;border-radius:6px;gap:2px;align-items:center;padding:4px 1px;
+    font-size:12px;text-align:center;overflow:hidden}
+  .calm-dia b{font-size:13px}
+  .calm-lua{font-size:17px;line-height:1.15}
+  .calm-grupo{font-size:9px;line-height:1.1;text-align:center;width:100%;word-break:keep-all}
+  .calm-evento{font-size:9px;line-height:1.1;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .calm-detalhe{padding:12px 10px}
+  .calm-trabalhos{grid-template-columns:minmax(0,1fr)}
+  #h_totalCultura,#h_totalGeral{overflow-wrap:anywhere}
+  .qc-mobile-multiselect[open]{scroll-margin-top:100px}
+}
+@media(max-width:360px){
+  .qc-brand-name h1{font-size:16px}
+  .qc-menu-top{min-width:51px}
+  .qc-menu-top span{display:none}
+  .qc-bottom-nav button small{font-size:9px}
+  .calm-dia{min-height:64px}
+  .calm-lua{font-size:15px}
+}
+@media(min-width:681px){.qc-help summary,.qc-files summary{display:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+
+/* v1.0.34 — instalação PWA opcional, sem mudanças nos formulários */
+.qc-install-btn{background:#1b5e20;color:#fff;min-height:42px;padding:8px 11px;font-weight:700;white-space:nowrap}
+.qc-install-btn[hidden],.qc-update-notice[hidden]{display:none!important}
+.qc-install-guide{margin-top:12px;padding:10px 12px;background:#f0f8f1;border:1px solid #cee6d3;border-radius:10px}
+.qc-install-guide p{margin:6px 0;font-size:12px;line-height:1.5}
+.qc-install-guide strong{color:#1b5e20;font-size:13px}
+.qc-update-notice{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#eaf5ed;border:1px solid #b9dcc0;padding:9px 12px;border-radius:10px;margin-bottom:10px;font-size:13px}
+.qc-update-notice button{flex-shrink:0}
+@media(max-width:680px){.qc-install-btn{min-height:39px;font-size:12px;padding:6px 7px}.qc-update-notice{flex-wrap:wrap}}
+@media(max-width:360px){.qc-install-btn{font-size:11px;padding:6px 5px}.qc-brand-icon{width:37px;height:37px}.qc-brand-name h1{font-size:15px}}
+
+
+/* v1.0.35 — filtros, histórico mensal, espécies e notas fixas */
+.qc-filters{display:grid;grid-template-columns:minmax(190px,2fr) minmax(170px,1fr) auto;gap:10px;align-items:end;margin:10px 0 14px;padding:12px;background:#f2f8f3;border:1px solid #d9e9dc;border-radius:10px}
+.qc-filters label{font-size:12px;font-weight:700;color:#33583a;margin:0 0 2px}
+.qc-filters input{margin:0;min-height:43px}
+.qc-filters button{min-height:43px}
+.qc-month-group{margin:12px 0 18px;border:1px solid #d8e4da;border-radius:10px;background:white;overflow:hidden}
+.qc-month-group>h4{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:0;background:#e8f3e9;padding:10px 12px;font-size:14px;color:#1c5127;border-bottom:1px solid #d8e4da}
+.qc-month-group>.qc-month-content>.item,.qc-month-group>.qc-month-content>.list{border-radius:0;margin:0;border-top:1px solid #e7ede8}
+.qc-month-group>.qc-month-content>.item:first-child{border-top:0}
+.qc-month-group>.qc-month-content>.list{border:0;border-top:1px solid #d8e4da}
+.qc-month-group>.qc-month-content>.list:first-child{border-top:0}
+.qc-filter-empty{padding:18px;color:#64746a;background:#f7faf8;border:1px dashed #c8dacb;border-radius:9px}
+#n_texto{min-height:280px;line-height:1.6;font-size:16px;padding:14px;resize:vertical}
+.qc-note-pinned{border:2px solid #aed6b7;background:#f3faf4;margin:12px 0;padding:13px;border-radius:10px}
+.qc-note-pinned h4{margin:0 0 7px;color:#205d2c}
+.qc-pin-tag{display:inline-block;padding:3px 7px;background:#dff1e2;color:#276134;border-radius:8px;font-size:12px;font-weight:bold}
+.qc-species-selectors{background:#f3f8f4;border:1px solid #dae9de;border-radius:9px;padding:12px;margin:9px 0 16px}
+.qc-species-selectors .small{margin-top:8px}
+.qc-report-helper{padding:10px 12px;background:#f4f8f4;border-left:4px solid #2e7d32;border-radius:6px;font-size:13px;color:#355841}
+@media(max-width:720px){.qc-filters{grid-template-columns:1fr;gap:8px;padding:10px}.qc-filters button{width:100%}#n_texto{min-height:330px}}
+
+
+/* v1.0.36 — sementeiras integradas, relatórios configuráveis e Ajudas Avelino */
+.qc-sementeiras-integradas{border-top:3px solid #9acda4;padding-top:16px;margin-top:15px}
+.qc-sementeiras-integradas>.card:first-child{background:#f5fbf6}
+.qc-report-options{border:1px solid #cbded0;border-radius:12px;padding:14px;margin:14px 0;background:#f8fbf8;min-width:0}
+.qc-report-options legend{font-weight:750;color:#194f29;padding:0 7px}
+.qc-report-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:7px 12px}
+.qc-report-checks label{display:flex;align-items:center;gap:10px;margin:0;background:#fff;border:1px solid #deebe0;padding:9px 10px;border-radius:9px;cursor:pointer}
+.qc-report-checks input{width:19px;height:19px;flex-shrink:0;accent-color:#2e7d32}
+.qc-report-actions{margin:11px 0 8px}.qc-report-actions button{min-width:125px}
+.qc-avelino-gallery{margin:10px 0 19px;border:1px solid #d7e8d9;border-radius:12px;background:#f9fcfa;padding:12px}
+.qc-avelino-gallery summary{font-weight:750;cursor:pointer;color:#20592f;padding:4px 0 10px}
+.qc-avelino-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:13px}
+.qc-avelino-grid figure{margin:0;background:#fff;border:1px solid #dce8de;border-radius:10px;overflow:hidden}
+.qc-avelino-grid img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}
+.qc-avelino-grid figcaption{font-size:12px;line-height:1.4;padding:9px 12px;color:#305740;font-weight:650}
+@media(max-width:680px){.qc-report-checks{grid-template-columns:1fr}.qc-avelino-grid{grid-template-columns:1fr}.qc-report-options{padding:11px}}
+
+
+/* v1.0.37 — ações dentro da cultura e plantações por cultura, recolhidas */
+#c_lista>.list,#p_historico>.list{margin-bottom:10px}
+.qc-plantar-btn{background:#287a3b}
+#c_lista .item .row>div:last-child{display:flex;gap:6px;flex-wrap:wrap}
+#c_lista .item .row button{flex:1 1 auto;min-width:105px}
+#p_historico>.list>.cabecalho:focus-visible{outline:3px solid #1976d2;outline-offset:-3px}
+.qc-plantacoes-conteudo{padding:5px 9px 9px}
+.qc-plantacoes-fotos{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+@media(max-width:680px){
+ #c_lista .item .row>div:last-child{width:100%;flex:1 1 100%!important}
+ #c_lista .item .row button{min-width:0;flex:1 1 calc(50% - 7px);font-size:12px}
+ .qc-plantacoes-conteudo{padding:5px 5px 9px}
+}
+
+/* v1.0.38 — pesquisa de colheitas e biblioteca Ajudas Avelino */
+.qc-harvest-found{margin:10px 0}
+.qc-harvest-found>div{min-width:0}
+.qc-avelino-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:13px;align-items:start}
+.qc-avelino-grid figure{margin:0;background:#fff;border:1px solid #d8e8d9;border-radius:10px;overflow:hidden}
+.qc-avelino-grid figure img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#f7faf7}
+.qc-avelino-grid figure figcaption{padding:9px 10px;font-size:12px;font-weight:650;line-height:1.4;color:#22522d}
+@media(max-width:680px){.qc-avelino-grid{grid-template-columns:1fr;gap:11px}.qc-avelino-grid figure figcaption{font-size:13px}}
+
+</style>
+<!-- PDF: usar impressão do browser (Guardar como PDF). Sem dependências externas. -->
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#2e7d32">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Caderno BIO">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+</head>
+<body>
+
+
+<header class="qc-brand" id="qcBrand">
+  <img class="qc-brand-icon" src="icon-192.png" alt="" width="54" height="54">
+  <div class="qc-brand-name"><h1>Quintal do Cravinho</h1><p>📒 Culturas, sementeiras e colheitas</p></div>
+  <button type="button" id="qcInstallBtn" class="qc-install-btn" hidden aria-label="Instalar Caderno de Campo BIO">⬇️ Instalar</button>
+  <button type="button" class="qc-menu-top" id="qcMenuTop" onclick="qcOpenMenu()" aria-controls="qcMobileMenu" aria-expanded="false" aria-label="Abrir menu de separadores">☰ <span>Menu</span></button>
+</header>
+
+<div class="topbar card" id="qcTopbar">
+  <details class="qc-files" id="qcFiles" open>
+    <summary>💾 Guardar, importar e fazer cópias</summary>
+  <div class="left">
+    <button class="sec" onclick="exportJSON()">💾 Guardar (JSON)</button>
+    <button class="sec" onclick="importMenu()">📂 Abrir (JSON)</button>
+
+    <button class="sec" onclick="exportPackage()">📦 Backup (ZIP)</button>
+    <button class="sec" onclick="importPackage()">📦 Restaurar (ZIP)</button>
+
+    <label class="autosave"><input type="checkbox" id="autosaveToggle" checked onchange="setAutosave(this.checked)"> Auto‑guardar</label>
+  </div>
+  </details>
+  <div class="right">
+    <span id="netStatus" class="badge" style="margin-right:8px"></span><span id="status" class="small"></span>
+  </div>
+</div>
+
+<div id="qcUpdateNotice" class="qc-update-notice" role="status" hidden>
+  <span>✅ Nova versão disponível. Faça backup se tiver registos pendentes e atualize para carregar os novos ficheiros.</span>
+  <button type="button" onclick="location.reload()">Atualizar agora</button>
+</div>
+
+<details class="qc-help" id="qcHelp" open>
+  <summary>ℹ️ Como usar e proteger os registos</summary>
+  <div class="card small">
+
+  <div><b>✅ No navegador ou instalada:</b> pode utilizar diretamente no browser ou instalar no telemóvel. Os dados ficam guardados <b>neste dispositivo</b> (offline).</div>
+  <div style="margin-top:6px"><b>💾 Guardar em ficheiro:</b> use <b>Guardar (JSON)</b> para criar um ficheiro com os dados (inclui as fotos já reduzidas). Para continuar noutro equipamento, use <b>Abrir (JSON)</b>.</div>
+  <div style="margin-top:6px"><b>📦 Recomendado:</b> use <b>Backup (ZIP)</b> para muitos registos com fotos (mais leve e mais fiável). No outro equipamento use <b>Restaurar (ZIP)</b>.</div>
+
+  <div class="qc-install-guide" id="qcInstallGuide">
+    <strong>📲 Instalar no telemóvel (opcional)</strong>
+    <p id="qcInstallStatus" role="status">Abra a aplicação num endereço HTTPS para a poder instalar.</p>
+    <p><b>Android / Chrome:</b> menu ⋮ → <b>Instalar aplicação</b> (ou <b>Adicionar ao ecrã principal</b>).</p>
+    <p><b>iPhone / Safari:</b> botão Partilhar → <b>Adicionar ao ecrã principal</b> → <b>Abrir como aplicação</b> → Adicionar.</p>
+    <p class="small">O modo offline funciona depois de abrir a aplicação com internet pelo menos uma vez e concluir a cache. Os registos são guardados no próprio dispositivo. Faça cópias de segurança ZIP regularmente.</p>
+  </div>
+
+  </div>
+</details>
+
+<div class="tabs" aria-label="Separadores">
+  <button class="tabbtn active" id="tab_campo" onclick="showTab('campo')">📒 Culturas e Sementeiras</button>
+  <button class="tabbtn" id="tab_plantacoes" onclick="showTab('plantacoes')">🪴 Plantações</button>
+  <button class="tabbtn" id="tab_colheitas" onclick="showTab('colheitas')">🥕 Colheitas</button>
+  <button class="tabbtn" id="tab_especies" onclick="showTab('especies')">🌱 Espécies</button>
+  <button class="tabbtn" id="tab_fito" onclick="showTab('fito')">🧪 Fitofarmacêuticos</button>
+  <button class="tabbtn" id="tab_ops" onclick="showTab('ops')">🛠️ Operações &amp; Tarefas</button>
+  <button class="tabbtn" id="tab_notas" onclick="showTab('notas')">📝 Notas</button>
+  <button class="tabbtn" id="tab_fin" onclick="showTab('fin')">💶 Gestão €</button>
+  <button class="tabbtn" id="tab_rot" onclick="showTab('rot')">🔄 Rotação de Culturas</button>
+  <button class="tabbtn" id="tab_cal" onclick="showTab('cal')">📅 Calendário</button>  <button class="tabbtn" id="tab_cfg" onclick="showTab('cfg')">⚙️ Configuração</button>
+
+  <button class="tabbtn" id="tab_rel" onclick="showTab('rel')">📄 Relatórios</button>
+</div>
+
+<!-- Navegação tátil: apresentada apenas em ecrãs pequenos -->
+<div class="qc-mobile-backdrop" id="qcMobileBackdrop" hidden onclick="qcCloseMenu()"></div>
+<aside class="qc-mobile-drawer" id="qcMobileMenu" role="dialog" aria-modal="true" aria-label="Menu de separadores" aria-hidden="true" hidden>
+  <div class="qc-drawer-head"><strong>🌿 Separadores</strong><button type="button" class="qc-close" onclick="qcCloseMenu()" aria-label="Fechar menu">✕</button></div>
+  <nav id="qcMobileMenuLinks" class="qc-drawer-links" aria-label="Todos os separadores"></nav>
+  <div class="qc-drawer-tools">
+    <button type="button" class="sec" onclick="qcOpenFileTools()">💾 Guardar e restaurar</button>
+    <button type="button" class="sec" onclick="qcOpenHelp()">ℹ️ Ajuda e utilização offline</button>
+  </div>
+</aside>
+<nav class="qc-bottom-nav" id="qcBottomNav" aria-label="Acesso rápido no telemóvel">
+  <button type="button" data-qc-view="campo" onclick="qcNavigate('campo')"><span aria-hidden="true">📒</span><small>Culturas</small></button>
+  <button type="button" data-qc-view="plantacoes" onclick="qcNavigate('plantacoes')"><span aria-hidden="true">🪴</span><small>Plantações</small></button>
+  <button type="button" data-qc-view="colheitas" onclick="qcNavigate('colheitas')"><span aria-hidden="true">🥕</span><small>Colheitas</small></button>
+  <button type="button" id="qcBottomMore" onclick="qcOpenMenu()" aria-haspopup="dialog" aria-controls="qcMobileMenu"><span aria-hidden="true">☰</span><small>Mais</small></button>
+</nav>
+
+<!-- ===================== ESPÉCIES ===================== -->
+<div id="view_especies" class="hidden">
+  <div class="card">
+    <h3>Selecionar</h3>
+    <label>Família</label><select id="e_famSel"></select>
+    <label>Espécie</label><select id="e_espSel"></select>
+    <label>Variedade</label><select id="e_varSel"></select>
+
+    <div class="row" style="margin-top:10px">
+      <button class="purp" onclick="e_editar()">✏️ Editar</button>
+      <button class="warn" onclick="e_apagarVar()">🗑️ Variedade</button>
+      <button class="warn" onclick="e_apagarEsp()">🗑️ Espécie</button>
+      <button class="warn" onclick="e_apagarFam()">🗑️ Família</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Adicionar / atualizar</h3>
+    <div class="qc-species-selectors">
+      <strong>Selecionar família e espécie já registadas</strong>
+      <div class="row">
+        <div><label for="e_famExistente">Família existente</label><select id="e_famExistente" onchange="e_escolherFamiliaExistente()"><option value="">— Nova família / escrever —</option></select></div>
+        <div><label for="e_espExistente">Espécie existente</label><select id="e_espExistente" onchange="e_escolherEspecieExistente()"><option value="">— Nova espécie / escrever —</option></select></div>
+      </div>
+      <div class="small">Escolha da lista ou escreva uma família/espécie nova nos campos abaixo. As seleções não alteram a base até carregar em Guardar.</div>
+    </div>
+    <label>Família</label><input id="e_famInput" list="e_famSugestoes" placeholder="Escolher existente ou escrever nova"><datalist id="e_famSugestoes"></datalist>
+    <label>Espécie</label><input id="e_espInput" list="e_espSugestoes" placeholder="Escolher existente ou escrever nova"><datalist id="e_espSugestoes"></datalist>
+    <label>Variedade</label><input id="e_varInput" placeholder="(opcional)">
+    <label>Companheiras (separar por vírgulas)</label><input id="e_compInput">
+    <label>Antagónicas (separar por vírgulas)</label><input id="e_antInput">
+
+    <div class="row" style="margin-top:10px">
+      <button onclick="e_guardar()">💾 Guardar</button>
+      <button class="sec" onclick="e_limpar()">🧽 Limpar</button>
+</div>
+  </div>
+</div>
+
+<!-- ===================== CAMPO ===================== -->
+<div id="view_campo">
+  <div class="card">
+    <h3>🌱 Criar cultura</h3>
+    <div class="row">
+      <div>
+        <label>Família</label><select id="c_famSel"></select>
+      </div>
+      <div>
+        <label>Espécie</label><select id="c_espSel"></select>
+      </div>
+      <div>
+        <label>Variedade</label><select id="c_varSel"></select>
+      </div>
+    </div>
+    <label>Variedade manual (se o seletor estiver em “—”)</label>
+    <input id="c_varManual" placeholder="(opcional)">
+    <div class="row" style="margin-top:10px">
+      <button onclick="c_criarCultura()">➕ Criar cultura</button>
+      <button class="warn" onclick="c_apagarCultura()">🗑️ Apagar cultura selecionada</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="qc_legacyOperacao" aria-hidden="true">
+    <h3>📝 Criar / editar operação</h3>
+    <div id="c_culturaAtiva" class="small" role="status" aria-live="polite" style="padding:8px 10px;margin-bottom:8px;background:#e8f5e9;border-radius:8px">Selecione uma cultura na lista de culturas e operações.</div>
+    <label>Tipo</label>
+    <select id="c_tipoOp" onchange="c_ajustarCampos()">
+      <option>Sementeira</option>
+    </select>
+
+    <div id="c_boxParcelas">
+      <label>Parcelas (Sementeira/Plantação)</label>
+      <select id="c_parcelasSel" multiple>
+        
+        <option>Talhão 1</option>
+        <option>Talhão 2</option>
+        <option>Talhão 3</option>
+        <option>Talhão 4</option>
+        <option>Talhão 5</option>
+        <option>Talhão 6</option><option>Pomar</option>
+        <option>Estufa C1</option>
+        <option>Estufa C2</option>
+        <option>Estufa C3</option>
+        <option>Estufa C4</option>
+        <option>Estufa Germinação</option>
+        <option>Estufinho 1</option>
+        <option>Estufinho 2</option>
+        <option>Estufinho 3</option>
+        <option>Estufinho 4</option>
+      
+      </select>
+      <div class="small qc-desktop-hint">Dica: use CTRL/⌘ para selecionar várias.</div><div class="small qc-mobile-hint">Toque em “Selecionar opções” para marcar várias.</div>
+    </div>
+
+    <div id="c_boxSementeiraOrigem" class="hidden">
+      <label for="c_sementeiraOrigem">Sementeira de origem (obrigatória para Plantação)</label>
+      <select id="c_sementeiraOrigem"><option value="">— Selecione primeiro uma sementeira —</option></select>
+      <div class="small">As plantações só podem ser associadas a sementeiras previamente registadas nesta cultura.</div>
+    </div>
+    <div id="c_boxMeses" class="hidden">
+      <label>Meses (Colheita)</label>
+      <select id="c_mesesSel" multiple>
+        <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
+        <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
+        <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+      </select>
+      <div class="small qc-desktop-hint">Dica: use CTRL/⌘ para selecionar várias.</div><div class="small qc-mobile-hint">Toque em “Selecionar opções” para marcar várias.</div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Data</label><input id="c_dataOp" type="date">
+      </div>
+      <div>
+        <label>Quantidade</label><input id="c_qtdOp" placeholder="ex.: 20 sementes / 6 plantas / 2 kg">
+        <div id="c_qtdColheitaWrap" class="row hidden" style="margin-top:6px">
+          <div style="flex:2">
+            <label>Colheita (valor)</label><input id="c_qtdColVal" type="number" step="0.001" min="0" placeholder="ex.: 1.250">
+          </div>
+          <div style="flex:1">
+            <label>Unidade</label>
+            <select id="c_qtdColUnit"><option value="kg">kg</option><option value="g">g</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <label>Observação sugerida (opcional)</label><input id="c_obsSug" list="c_obsSug_list" placeholder="ex.: Canteiro direto">
+    <datalist id="c_obsSug_list">
+      <option value="Canteiro direto"></option>
+      <option value="Substrato de germinação (composto)"></option>
+      <option value="Substrato de minhocas"></option>
+      <option value="Outros"></option>
+    </datalist>
+    <label>Observações</label><textarea id="c_obsOp" placeholder="Escreva aqui..."></textarea>
+
+    <label>Fotos (máx. 2)</label><input id="c_fotoInput" type="file" accept="image/*" multiple>
+    <div id="c_fotosEdicao"></div>
+
+    <div class="row" style="margin-top:10px">
+      <button onclick="c_guardarOperacao()">💾 Guardar operação</button>
+      <button class="sec" onclick="c_limparFormulario()">🧽 Limpar</button>
+      <button class="warn" onclick="c_apagarOpSel()">🗑️ Apagar operação</button>
+      <button class="purp" onclick="c_editarOpSel()">✏️ Editar operação</button>
+    </div>
+
+    <div id="c_estadoEdicao" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button class="sec" onclick="c_exportarPDF()">📄 Exportar PDF (Campo)</button>
+</div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Culturas e sementeiras</h3>
+    <div class="small">Toque numa cultura para abrir ou recolher as suas sementeiras. Dentro da cultura encontra os botões <b>🌱 Registar sementeira</b> e, em cada sementeira, <b>🪴 Plantar</b> e <b>✏️ Editar sementeira</b>.</div>
+    <div class="qc-filters" role="search" aria-label="Filtrar culturas e operações">
+      <div><label for="qc_search_c">🔎 Pesquisar por nome / descrição</label><input id="qc_search_c" type="search" autocomplete="off" placeholder="Ex.: alface, tomate, talhão..." oninput="c_atualizar()"></div>
+      <div><label for="qc_month_c">📅 Mês</label><input id="qc_month_c" type="month" onchange="c_atualizar()"></div>
+      <button type="button" class="sec" onclick="qc_limparFiltros('c',c_atualizar)">Ver todos</button>
+    </div>
+    <div id="c_lista"></div>
+  </div>
+<!-- ===================== SEMENTEIRAS ===================== -->
+<section id="qc_sementeiras_area" class="qc-sementeiras-integradas">
+  <div class="card">
+    <h3>🌱 Sementeiras — registar / editar</h3>
+    <div class="small">Escolha uma ou várias culturas criadas acima. Cada cultura fica com o seu próprio registo de sementeira. As plantações futuras serão escolhidas desta lista.</div>
+    <label for="s_culturas">Culturas a semear</label>
+    <select id="s_culturas" multiple size="7" onchange="s_atualizarSelecao()"></select>
+    <div class="small qc-mobile-hint">Toque em “Selecionar opções” e marque as culturas.</div>
+    <div class="row">
+      <div><label for="s_data">Data da sementeira</label><input id="s_data" type="date"></div>
+      <div id="s_qtdUnicaBox"><label for="s_qtdUnica">Quantidade / unidades (opcional)</label><input id="s_qtdUnica" placeholder="ex.: 50 sementes, 1 tabuleiro"></div>
+    </div>
+    <div id="s_qtdMultiplas" class="hidden" style="margin-top:8px"></div>
+    <label for="s_parcelas">Parcela / local de sementeira</label>
+    <select id="s_parcelas" multiple size="5"></select>
+    <label for="s_obsSug">Observação sugerida (opcional)</label>
+    <input id="s_obsSug" list="s_obsSug_list" placeholder="Ex.: Tabuleiro de germinação">
+    <datalist id="s_obsSug_list"><option value="Tabuleiro de germinação"></option><option value="Sementeira direta"></option><option value="Substrato de germinação"></option></datalist>
+    <label for="s_obs">Observações</label>
+    <textarea id="s_obs" placeholder="ex.: germinação em tabuleiro, substrato, lote de sementes..."></textarea>
+    <label for="s_fotos">Fotografias (máx. 2 por registo)</label>
+    <input id="s_fotos" type="file" accept="image/*" multiple>
+    <div id="s_fotosEdicao" class="row" style="margin-top:8px"></div>
+    <div id="s_estado" role="status" aria-live="polite" class="small" style="margin-top:8px"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="s_guardarBtn" onclick="s_guardar()">🌱 Guardar sementeira</button>
+      <button class="sec" onclick="s_limpar()">🧽 Limpar / cancelar edição</button>
+    </div>
+  </div>
+  <div class="card hidden" aria-hidden="true">
+    <h3>📋 Histórico de sementeiras (dentro das culturas)</h3>
+    <div id="s_resumo" class="small"></div>
+    <div class="qc-filters" role="search" aria-label="Filtrar sementeiras">
+      <div><label for="qc_search_s">🔎 Pesquisar por nome / descrição</label><input id="qc_search_s" type="search" autocomplete="off" placeholder="Ex.: alface, tomate, talhão..." oninput="s_refresh()"></div>
+      <div><label for="qc_month_s">📅 Mês</label><input id="qc_month_s" type="month" onchange="s_refresh()"></div>
+      <button type="button" class="sec" onclick="qc_limparFiltros('s',s_refresh)">Ver todos</button>
+    </div>
+    <div id="s_historico"></div>
+  </div>
+</section>
+
+</div>
+
+<!-- ===================== PLANTAÇÕES ===================== -->
+<div id="view_plantacoes" class="hidden">
+  <div class="card">
+    <h3>🪴 Plantações — registar / editar</h3>
+    <div class="small">Só pode registar uma plantação escolhendo uma <b>sementeira já guardada</b>. Uma mesma sementeira pode originar várias plantações em datas diferentes.</div>
+    <label for="p_sementeira">Sementeira de origem (obrigatória)</label>
+    <select id="p_sementeira" onchange="p_atualizarSelecao()"><option value="">— Selecionar sementeira —</option></select>
+    <div id="p_origemResumo" class="small" style="padding:9px;margin:8px 0;background:#eef5ee;border-radius:8px">Selecione uma sementeira para iniciar.</div>
+    <div class="row">
+      <div><label for="p_data">Data da plantação</label><input id="p_data" type="date"></div>
+      <div><label for="p_quantidade">Quantidade plantada (plantas)</label><input id="p_quantidade" type="number" step="1" min="1" inputmode="numeric" placeholder="ex.: 12"></div>
+    </div>
+    <label for="p_parcelas">Parcelas de destino</label>
+    <select id="p_parcelas" multiple size="5"></select>
+    <label for="p_obsSug">Observação sugerida (opcional)</label>
+    <input id="p_obsSug" list="p_obsSug_list" placeholder="Ex.: Transplante para canteiro">
+    <datalist id="p_obsSug_list"><option value="Transplante para canteiro"></option><option value="Rega após plantação"></option><option value="Cobertura do solo"></option></datalist>
+    <label for="p_obs">Observações</label>
+    <textarea id="p_obs" placeholder="ex.: transplante, compassos, rega após plantação..."></textarea>
+    <label for="p_fotos">Fotografias (máx. 2)</label>
+    <input id="p_fotos" type="file" accept="image/*" multiple>
+    <div id="p_fotosEdicao" class="row" style="margin-top:8px"></div>
+    <div id="p_estado" role="status" aria-live="polite" class="small" style="margin-top:8px"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="p_guardarBtn" onclick="p_guardar()">🪴 Guardar plantação</button>
+      <button class="sec" onclick="p_limpar()">🧽 Limpar / cancelar edição</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📋 Plantações por cultura</h3>
+    <div class="small">Toque no nome de uma cultura para mostrar ou esconder as plantações. A lista inicia recolhida.</div>
+    <div id="p_resumo" class="small"></div>
+    <div class="qc-filters" role="search" aria-label="Filtrar plantações">
+      <div><label for="qc_search_p">🔎 Pesquisar por nome / descrição</label><input id="qc_search_p" type="search" autocomplete="off" placeholder="Ex.: alface, tomate, talhão..." oninput="p_refresh()"></div>
+      <div><label for="qc_month_p">📅 Mês</label><input id="qc_month_p" type="month" onchange="p_refresh()"></div>
+      <button type="button" class="sec" onclick="qc_limparFiltros('p',p_refresh)">Ver todos</button>
+    </div>
+    <div id="p_historico"></div>
+  </div>
+</div>
+
+<!-- ===================== COLHEITAS ===================== -->
+<div id="view_colheitas" class="hidden">
+  <div class="card">
+    <h3>🥕 Registar colheita</h3>
+    <div class="small">Selecione uma ou várias culturas. Se escolher várias, indique a quantidade em gramas <b>para cada cultura</b>; os pesos não são duplicados.</div>
+    <label for="h_cultura">Culturas</label>
+    <select id="h_cultura" multiple size="7" onchange="h_atualizar()"></select>
+    <div class="small qc-desktop-hint">No computador, use CTRL/⌘ para selecionar várias culturas.</div><div class="small qc-mobile-hint">Pode marcar várias culturas tocando nas opções.</div>
+    <div class="row">
+      <div>
+        <label for="h_data">Data da colheita</label>
+        <input id="h_data" type="date">
+      </div>
+      <div id="h_quantidadeUnica">
+        <label for="h_gramas">Quantidade a somar (g)</label>
+        <input id="h_gramas" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="ex.: 350">
+      </div>
+    </div>
+    <div id="h_quantidadesMultiplas" class="hidden" style="margin:10px 0"></div>
+    <label for="h_obs">Observações (opcional)</label>
+    <textarea id="h_obs" placeholder="ex.: primeira colheita, frutos maduros..."></textarea>
+    <div id="h_estadoEdicao" class="small" role="status" aria-live="polite" style="margin:8px 0"></div>
+    <div class="row" style="margin-top:8px">
+      <button id="h_botaoGuardar" onclick="h_guardar()">➕ Somar colheita</button>
+      <button id="h_botaoCancelar" class="sec hidden" onclick="h_cancelarEdicao()">Cancelar edição</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>⚖️ Contadores acumulados</h3>
+    <div class="row">
+      <div class="list" style="padding:12px">
+        <div class="small">Cultura(s) selecionada(s)</div>
+        <div id="h_totalCultura" style="font-size:26px;font-weight:bold;color:#1b5e20">0 g</div>
+      </div>
+      <div class="list" style="padding:12px">
+        <div class="small">Todas as culturas</div>
+        <div id="h_totalGeral" style="font-size:26px;font-weight:bold;color:#1b5e20">0 g</div>
+      </div>
+    </div>
+    <div id="h_resumo" class="small" style="margin-top:10px"></div>
+    <div id="h_totaisLista" style="margin-top:12px"></div>
+  </div>
+  <div class="card">
+    <h3>📋 Histórico de colheitas</h3>
+    <div class="small">Sem filtros, apresenta as colheitas das culturas selecionadas. Com pesquisa ou mês, consulta todas as culturas e agrupa os resultados por mês. Pode editar ou apagar os registos.</div>
+    <div class="qc-filters" role="search" aria-label="Pesquisar colheitas por cultura e mês">
+      <div><label for="h_pesquisa">🔎 Nome da cultura</label><input id="h_pesquisa" type="search" autocomplete="off" placeholder="Ex.: alface, rúcula, tomate" oninput="h_atualizar()"></div>
+      <div><label for="h_mes">📅 Mês da colheita</label><input id="h_mes" type="month" onchange="h_atualizar()"></div>
+      <button type="button" class="sec" onclick="h_limparFiltros()">Ver todos</button>
+    </div>
+    <div class="row qc-harvest-found" aria-live="polite">
+      <div class="list" style="padding:12px"><div class="small">Peso das colheitas encontradas</div><div id="h_totalFiltrado" style="font-size:23px;font-weight:bold;color:#1b5e20">0 g</div></div>
+      <div class="list" style="padding:12px"><div class="small">Resultados</div><div id="h_registosFiltrados" style="font-weight:bold">0 colheitas</div></div>
+    </div>
+    <div id="h_historico" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ===================== FITO ===================== -->
+<div id="view_fito" class="hidden">
+  <div class="card">
+    <h3>🌱 Selecionar culturas</h3>
+    <select id="f_culturaSel" multiple size="7"></select>
+    <div class="row" style="margin-top:10px">
+      <button class="warn" onclick="f_limparSelecao()">⬜ Limpar seleção</button>
+</div>
+  </div>
+
+  <div class="card">
+    <h3>🧪 Registo / edição de tratamento</h3>
+    <div class="row">
+      <div>
+        <label>Tipo intervenção</label>
+        <select id="f_tipoInt">
+          <option>Prevenção</option><option>Combate</option><option>Reforço</option>
+        </select>
+      </div>
+      <div>
+        <label>Tipo produto</label>
+        <select id="f_tipoProd" multiple>
+          <option>Calda bordalesa</option>
+          <option>Extrato vegetal</option>
+          <option>Armadilhas</option>
+          <option>Turex</option>
+          <option>Óleo Neem</option>
+          <option>Caldas diversas</option>
+          <option>Outros</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Produto / Receita</label><input id="f_produto" placeholder="ex.: calda bordalesa 1%">
+    <label>Local / Parcelas</label>
+    <select id="f_parcelasSel" multiple>
+      <option>Talhão 1</option><option>Talhão 2</option><option>Talhão 3</option><option>Talhão 4</option><option>Talhão 5</option><option>Talhão 6</option><option>Pomar</option>
+      <option>Estufa C1</option><option>Estufa C2</option><option>Estufa C3</option><option>Estufa C4</option>
+      <option>Estufa Germinação</option>
+      <option>Estufinho 1</option><option>Estufinho 2</option><option>Estufinho 3</option><option>Estufinho 4</option>
+    </select>
+    <div class="small">Opcional. Se precisar indicar algo fora da lista, use Observações.</div>
+
+    <div class="row">
+      <div><label>Data</label><input type="date" id="f_dataOp"></div>
+      <div><label>Dose / Concentração</label><input id="f_dose" placeholder="ex.: 10 ml/L"></div>
+    </div>
+
+    <label>Modo de aplicação</label>
+    <select id="f_modo">
+      <option>Pulverização</option><option>Solo</option><option>Armadilha</option><option>Outro</option>
+    </select>
+
+    <label>Motivo / alvo</label>
+    <select id="f_motivo" multiple>
+      <option>Míldio</option><option>Oídio</option><option>Pulgões</option><option>Lagartas</option>
+      <option>Lesmas</option><option>Mosca branca</option><option>Ácaros</option><option>Cochonilha</option><option>Outro</option>
+    </select>
+
+    <label>Observações</label><textarea id="f_obs" placeholder="ex.: aplicar ao fim do dia..."></textarea>
+
+    <label>Fotos (máx. 2)</label><input id="f_fotoInput" type="file" accept="image/*" multiple>
+    <div id="f_fotosEdicao"></div>
+
+    <div class="row" style="margin-top:10px">
+      <button onclick="f_guardar()">💾 Guardar tratamento</button>
+      <button class="sec" onclick="f_limparForm()">🧽 Limpar</button>
+      <button class="purp" onclick="f_editarSel()">✏️ Editar selecionado</button>
+      <button class="warn" onclick="f_apagarSelecao()">🗑️ Apagar seleção</button>
+    </div>
+    <div id="f_estadoEdicao" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button class="sec" onclick="f_exportarPDF()">📄 Exportar PDF (Fitofarm)</button>
+</div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Tratamentos</h3>
+    <div class="qc-filters" role="search" aria-label="Filtrar tratamentos">
+      <div><label for="qc_search_f">🔎 Pesquisar por nome / descrição</label><input id="qc_search_f" type="search" autocomplete="off" placeholder="Ex.: alface, tomate, talhão..." oninput="f_atualizar()"></div>
+      <div><label for="qc_month_f">📅 Mês</label><input id="qc_month_f" type="month" onchange="f_atualizar()"></div>
+      <button type="button" class="sec" onclick="qc_limparFiltros('f',f_atualizar)">Ver todos</button>
+    </div>
+    <div id="f_lista"></div>
+  </div>
+</div>
+
+
+
+<!-- ===================== CONFIGURAÇÃO ===================== -->
+<div id="view_cfg" class="hidden">
+  <div class="card">
+    <h3>⚙️ Configuração (listas editáveis)</h3>
+    <div class="small">
+      Aqui podes <b>reescrever as listas</b> usadas nos formulários (as “linhas” dos selects e sugestões).
+      As alterações aplicam-se aos formulários de <b>Culturas e Sementeiras</b>, <b>Plantações</b>, <b>Fitofarmacêuticos</b> e <b>Operações &amp; Tarefas</b>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📍 Parcelas / Locais</h3>
+    <div class="small">As parcelas são partilhadas por Sementeiras, Plantações, Fitofarmacêuticos, Operações/Tarefas e histórico de rotação.</div>
+    <div class="row" style="margin-top:8px">
+      <button class="purp" onclick="cfg_addItem('parcelas')">+ Adicionar</button>
+      <button class="sec" onclick="cfg_reset('parcelas')">Repor</button>
+    </div>
+    <div id="cfg_parcelasList" class="list" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h3>💬 Observações sugeridas</h3>
+    <div class="small">Sugestões no campo “Observação sugerida”.</div>
+    <div class="row" style="margin-top:8px">
+      <button class="purp" onclick="cfg_addItem('observacoes')">+ Adicionar</button>
+      <button class="sec" onclick="cfg_reset('observacoes')">Repor</button>
+    </div>
+    <div id="cfg_obsList" class="list" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h3>🌱 Observações sugeridas — Sementeiras</h3>
+    <div class="small">Sugestões disponíveis ao registar uma sementeira.</div>
+    <div class="row" style="margin-top:8px"><button class="purp" onclick="cfg_addItem('observacoesSementeiras')">+ Adicionar</button><button class="sec" onclick="cfg_reset('observacoesSementeiras')">Repor</button></div>
+    <div id="cfg_obsSementeirasList" class="list" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>🪴 Observações sugeridas — Plantações</h3>
+    <div class="small">Sugestões disponíveis ao registar uma plantação.</div>
+    <div class="row" style="margin-top:8px"><button class="purp" onclick="cfg_addItem('observacoesPlantacoes')">+ Adicionar</button><button class="sec" onclick="cfg_reset('observacoesPlantacoes')">Repor</button></div>
+    <div id="cfg_obsPlantacoesList" class="list" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>🧪 Tipos / Motivos (Fitofarm)</h3>
+    <div class="small">Listas usadas em “Tipo produto” e “Motivo”.</div>
+
+    <div style="margin-top:10px"><b>Tipos de produto</b></div>
+    <div class="row" style="margin-top:8px">
+      <button class="purp" onclick="cfg_addItem('tiposFitofarm')">+ Adicionar</button>
+      <button class="sec" onclick="cfg_reset('tiposFitofarm')">Repor</button>
+    </div>
+    <div id="cfg_tiposFitList" class="list" style="margin-top:8px"></div>
+
+    <hr>
+
+    <div style="margin-top:10px"><b>Motivos</b></div>
+    <div class="row" style="margin-top:8px">
+      <button class="purp" onclick="cfg_addItem('motivosFitofarm')">+ Adicionar</button>
+      <button class="sec" onclick="cfg_reset('motivosFitofarm')">Repor</button>
+    </div>
+    <div id="cfg_motivosFitList" class="list" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h3>🛠️ Tipos de Operações &amp; Tarefas</h3>
+    <div class="small">Listas usadas no separador “Operações &amp; Tarefas”.</div>
+
+    <div style="margin-top:10px"><b>Operações culturais</b></div>
+    <div class="row" style="margin-top:8px">
+      <button class="purp" onclick="cfg_addItem('ops_operacao')">+ Adicionar</button>
+      <button class="sec" onclick="cfg_reset('ops_operacao')">Repor</button>
+    </div>
+    <div id="cfg_opsOperacaoList" class="list" style="margin-top:8px"></div>
+
+    <hr>
+
+    <div style="margin-top:10px"><b>Medidas de proteção e fertilização</b></div>
+    <div class="row" style="margin-top:8px">
+      <button class="purp" onclick="cfg_addItem('ops_prot_fert')">+ Adicionar</button>
+      <button class="sec" onclick="cfg_reset('ops_prot_fert')">Repor</button>
+    </div>
+    <div id="cfg_opsProtFertList" class="list" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- ===================== NOTAS ===================== -->
+<div id="view_notas" class="hidden">
+  <div class="card">
+    <h3>📝 Notas</h3>
+    <div class="small">Registos livres (ex.: construção, manutenção, ideias, ocorrências). Pode associar a parcelas e culturas, e anexar fotos.</div>
+  
+    <div class="row" style="margin-top:10px">
+      <button class="blue" onclick="n_printPDF()">🖨️ Imprimir / PDF (Notas)</button>
+      <div>
+        <label style="margin:0">Incluir fotos</label>
+        <select id="n_pdf_photos">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+    </div>
+</div>
+
+  <div class="card">
+    <h3>➕ Criar / editar nota</h3>
+
+    <div class="row">
+      <div>
+        <label>Data</label><input id="n_data" type="date">
+      </div>
+      <div>
+        <label>Assunto</label><input id="n_assunto" placeholder="ex.: Construção canteiros">
+      </div>
+    </div>
+
+    <label>Texto</label>
+    <textarea id="n_texto" rows="14" placeholder="Escreva notas detalhadas, observações, medidas tomadas, resultados e informação para referência futura..."></textarea>
+
+    <div class="row">
+      <div>
+        <label>Parcelas (opcional)</label>
+        <select id="n_parcelas" multiple>
+          <option>Talhão 1</option><option>Talhão 2</option><option>Talhão 3</option><option>Talhão 4</option><option>Talhão 5</option><option>Talhão 6</option><option>Pomar</option>
+          <option>Estufa C1</option><option>Estufa C2</option><option>Estufa C3</option><option>Estufa C4</option>
+          <option>Estufa Germinação</option>
+          <option>Estufinho 1</option><option>Estufinho 2</option><option>Estufinho 3</option><option>Estufinho 4</option>
+        </select>
+      </div>
+      <div>
+        <label>Culturas (opcional)</label>
+        <select id="n_culturas" multiple></select>
+      </div>
+    </div>
+
+    <label>Espécies (opcional)</label>
+    <select id="n_especies" multiple size="7"></select>
+    <div class="small">Opcional. Use para associar a nota a espécies (mesmo sem ter cultura criada).</div>
+
+    <label>Fotos (máx. 2)</label><input id="n_fotoInput" type="file" accept="image/*" multiple>
+    <div id="n_fotosEdicao"></div>
+
+    <div class="row" style="margin-top:10px">
+      <button onclick="n_guardar()">💾 Guardar nota</button>
+      <button class="sec" onclick="n_limpar()">🧽 Limpar</button>
+      <button class="warn" onclick="n_apagarSelecionadas()">🗑️ Apagar selecionadas</button>
+    </div>
+    <div id="n_estadoEdicao" class="small"></div>
+  </div>
+
+  <div class="card">
+    <details class="qc-avelino-gallery" open>
+      <summary>📚 Ajudas Avelino — material ilustrado para consulta (20 páginas)</summary>
+      <p class="small">Documento «Notas Avelino» que adicionaste, organizado em páginas. Seleciona uma imagem para ampliar. Esta biblioteca é independente das tuas notas e não cria registos fixos.</p>
+      <div class="qc-avelino-grid" id="qc_ajudasAvelinoGal">
+        <figure><a href="ajudas-avelino-01.webp" target="_blank" rel="noopener" aria-label="Abrir página 1: Motor energético — combustível microbiano"><img src="ajudas-avelino-01.webp" alt="Página 1 — Motor energético — combustível microbiano" loading="lazy"></a><figcaption>01. Motor energético — combustível microbiano</figcaption></figure>
+        <figure><a href="ajudas-avelino-02.webp" target="_blank" rel="noopener" aria-label="Abrir página 2: Motor microbiológico — inóculo natural"><img src="ajudas-avelino-02.webp" alt="Página 2 — Motor microbiológico — inóculo natural" loading="lazy"></a><figcaption>02. Motor microbiológico — inóculo natural</figcaption></figure>
+        <figure><a href="ajudas-avelino-03.webp" target="_blank" rel="noopener" aria-label="Abrir página 3: Motor estrutural — oxigénio e aeração"><img src="ajudas-avelino-03.webp" alt="Página 3 — Motor estrutural — oxigénio e aeração" loading="lazy"></a><figcaption>03. Motor estrutural — oxigénio e aeração</figcaption></figure>
+        <figure><a href="ajudas-avelino-04.webp" target="_blank" rel="noopener" aria-label="Abrir página 4: Motor térmico — massa crítica"><img src="ajudas-avelino-04.webp" alt="Página 4 — Motor térmico — massa crítica" loading="lazy"></a><figcaption>04. Motor térmico — massa crítica</figcaption></figure>
+        <figure><a href="ajudas-avelino-05.webp" target="_blank" rel="noopener" aria-label="Abrir página 5: Sinais de evolução da pilha de composto"><img src="ajudas-avelino-05.webp" alt="Página 5 — Sinais de evolução da pilha de composto" loading="lazy"></a><figcaption>05. Sinais de evolução da pilha de composto</figcaption></figure>
+        <figure><a href="ajudas-avelino-06.webp" target="_blank" rel="noopener" aria-label="Abrir página 6: Quando revolver a pilha de composto"><img src="ajudas-avelino-06.webp" alt="Página 6 — Quando revolver a pilha de composto" loading="lazy"></a><figcaption>06. Quando revolver a pilha de composto</figcaption></figure>
+        <figure><a href="ajudas-avelino-07.webp" target="_blank" rel="noopener" aria-label="Abrir página 7: Chá de composto oxigenado"><img src="ajudas-avelino-07.webp" alt="Página 7 — Chá de composto oxigenado" loading="lazy"></a><figcaption>07. Chá de composto oxigenado</figcaption></figure>
+        <figure><a href="ajudas-avelino-08.webp" target="_blank" rel="noopener" aria-label="Abrir página 8: Pragas e doenças — compreender o equilíbrio"><img src="ajudas-avelino-08.webp" alt="Página 8 — Pragas e doenças — compreender o equilíbrio" loading="lazy"></a><figcaption>08. Pragas e doenças — compreender o equilíbrio</figcaption></figure>
+        <figure><a href="ajudas-avelino-09.webp" target="_blank" rel="noopener" aria-label="Abrir página 9: Pragas comuns na horta e no pomar"><img src="ajudas-avelino-09.webp" alt="Página 9 — Pragas comuns na horta e no pomar" loading="lazy"></a><figcaption>09. Pragas comuns na horta e no pomar</figcaption></figure>
+        <figure><a href="ajudas-avelino-10.webp" target="_blank" rel="noopener" aria-label="Abrir página 10: Doenças comuns na horta e no pomar"><img src="ajudas-avelino-10.webp" alt="Página 10 — Doenças comuns na horta e no pomar" loading="lazy"></a><figcaption>10. Doenças comuns na horta e no pomar</figcaption></figure>
+        <figure><a href="ajudas-avelino-11.webp" target="_blank" rel="noopener" aria-label="Abrir página 11: Plantas saudáveis e resilientes"><img src="ajudas-avelino-11.webp" alt="Página 11 — Plantas saudáveis e resilientes" loading="lazy"></a><figcaption>11. Plantas saudáveis e resilientes</figcaption></figure>
+        <figure><a href="ajudas-avelino-12.webp" target="_blank" rel="noopener" aria-label="Abrir página 12: Insetos auxiliares na horta e no pomar"><img src="ajudas-avelino-12.webp" alt="Página 12 — Insetos auxiliares na horta e no pomar" loading="lazy"></a><figcaption>12. Insetos auxiliares na horta e no pomar</figcaption></figure>
+        <figure><a href="ajudas-avelino-13.webp" target="_blank" rel="noopener" aria-label="Abrir página 13: Como atrair e proteger insetos auxiliares"><img src="ajudas-avelino-13.webp" alt="Página 13 — Como atrair e proteger insetos auxiliares" loading="lazy"></a><figcaption>13. Como atrair e proteger insetos auxiliares</figcaption></figure>
+        <figure><a href="ajudas-avelino-14.webp" target="_blank" rel="noopener" aria-label="Abrir página 14: Escaravelho-da-bananeira — armadilhas"><img src="ajudas-avelino-14.webp" alt="Página 14 — Escaravelho-da-bananeira — armadilhas" loading="lazy"></a><figcaption>14. Escaravelho-da-bananeira — armadilhas</figcaption></figure>
+        <figure><a href="ajudas-avelino-15.webp" target="_blank" rel="noopener" aria-label="Abrir página 15: Soluções naturais e biocontrolo"><img src="ajudas-avelino-15.webp" alt="Página 15 — Soluções naturais e biocontrolo" loading="lazy"></a><figcaption>15. Soluções naturais e biocontrolo</figcaption></figure>
+        <figure><a href="ajudas-avelino-16.webp" target="_blank" rel="noopener" aria-label="Abrir página 16: Doenças na horta e no pomar"><img src="ajudas-avelino-16.webp" alt="Página 16 — Doenças na horta e no pomar" loading="lazy"></a><figcaption>16. Doenças na horta e no pomar</figcaption></figure>
+        <figure><a href="ajudas-avelino-17.webp" target="_blank" rel="noopener" aria-label="Abrir página 17: Principais doenças das árvores de fruto"><img src="ajudas-avelino-17.webp" alt="Página 17 — Principais doenças das árvores de fruto" loading="lazy"></a><figcaption>17. Principais doenças das árvores de fruto</figcaption></figure>
+        <figure><a href="ajudas-avelino-18.webp" target="_blank" rel="noopener" aria-label="Abrir página 18: Principais pragas das árvores de fruto"><img src="ajudas-avelino-18.webp" alt="Página 18 — Principais pragas das árvores de fruto" loading="lazy"></a><figcaption>18. Principais pragas das árvores de fruto</figcaption></figure>
+        <figure><a href="ajudas-avelino-19.webp" target="_blank" rel="noopener" aria-label="Abrir página 19: Armadilhas para a mosca-da-fruta"><img src="ajudas-avelino-19.webp" alt="Página 19 — Armadilhas para a mosca-da-fruta" loading="lazy"></a><figcaption>19. Armadilhas para a mosca-da-fruta</figcaption></figure>
+        <figure><a href="ajudas-avelino-20.webp" target="_blank" rel="noopener" aria-label="Abrir página 20: Prevenção — boas práticas para plantas saudáveis"><img src="ajudas-avelino-20.webp" alt="Página 20 — Prevenção — boas práticas para plantas saudáveis" loading="lazy"></a><figcaption>20. Prevenção — boas práticas para plantas saudáveis</figcaption></figure>
+      </div>
+      <p class="small">Nota: as imagens são material de apoio. Antes de aplicar preparados ou tratamentos, confirma a adequação agronómica e as regras de produção biológica certificada.</p>
+    </details>
+    <h3>📋 Lista de notas</h3>
+    <div class="qc-filters" role="search" aria-label="Filtrar notas">
+      <div><label for="qc_search_n">🔎 Pesquisar por nome / descrição</label><input id="qc_search_n" type="search" autocomplete="off" placeholder="Ex.: alface, tomate, talhão..." oninput="n_atualizar()"></div>
+      <div><label for="qc_month_n">📅 Mês</label><input id="qc_month_n" type="month" onchange="n_atualizar()"></div>
+      <button type="button" class="sec" onclick="qc_limparFiltros('n',n_atualizar)">Ver todos</button>
+    </div>
+    <div id="n_lista"></div>
+  </div>
+</div>
+
+<!-- ===================== GESTÃO € ===================== -->
+<div id="view_fin" class="hidden">
+  <div class="card">
+    <h3>💶 Gestão € (Compras e Vendas)</h3>
+    <div class="small">Regista compras e vendas, com totais automáticos e foto opcional por registo.</div>
+  
+    <div class="row" style="margin-top:10px">
+      <button class="blue" onclick="g_printPDF()">🖨️ Imprimir / PDF (Gestão €)</button>
+      <div>
+        <label style="margin:0">Incluir fotos</label>
+        <select id="g_pdf_photos">
+          <option value="no">Não</option>
+          <option value="yes">Sim</option>
+        </select>
+      </div>
+    </div>
+</div>
+
+  <div class="card">
+    <h3>➕ Adicionar registo</h3>
+
+    <div class="row">
+      <div>
+        <label>Tipo</label>
+        <select id="g_tipo">
+          <option value="compra">Compra</option>
+          <option value="venda">Venda</option>
+        </select>
+      </div>
+      <div>
+        <label>Data</label><input id="g_data" type="date">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Descrição</label><input id="g_desc" placeholder="ex.: sementes, composto, venda cabazes">
+      </div>
+      <div>
+        <label>Valor (€)</label><input id="g_valor" type="number" step="0.01" min="0" placeholder="ex.: 12.50">
+      </div>
+    </div>
+
+    <label>Foto (opcional)</label><input id="g_fotoInput" type="file" accept="image/*">
+    <div id="g_fotoPreview"></div>
+
+    <div class="row" style="margin-top:10px">
+      <button onclick="g_guardar()">💾 Guardar</button>
+      <button class="sec" onclick="g_limpar()">🧽 Limpar</button>
+      <button class="warn" onclick="g_apagarSelecionados()">🗑️ Apagar selecionados</button>
+    </div>
+    <div id="g_estadoEdicao" class="small"></div>
+  </div>
+
+  <div class="card">
+    <h3>📊 Totais</h3>
+    <div id="g_totais" class="small"></div>
+  </div>
+
+  <div class="card">
+    <h3>🧾 Compras</h3>
+    <div id="g_lista_compras"></div>
+  </div>
+
+  <div class="card">
+    <h3>🧾 Vendas</h3>
+    <div id="g_lista_vendas"></div>
+  </div>
+</div>
+
+<!-- ===================== CALENDÁRIO ===================== -->
+
+<!-- ===================== OPERAÇÕES & TAREFAS ===================== -->
+<div id="view_ops" class="hidden">
+  <div class="card">
+    <h3>🛠️ Registo de Operações e Tarefas</h3>
+    <div class="small">
+      Regista tarefas como <b>retanchas, podas, mondas, mobilizações</b> e também medidas de <b>conservação do solo</b> e <b>proteção</b> (ex.: mobilização mínima, cobertura vegetal, monda térmica, mulching, largada de auxiliares, etc.).
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>➕ Criar / editar registo</h3>
+
+    <div class="row">
+      <div>
+        <label>Categoria</label>
+        <select id="o_categoria" onchange="o_syncSubtipos()">
+          <option value="operacao">Operações culturais</option>
+          <option value="prot_fert">Medidas de proteção e fertilização</option>
+        </select>
+      </div>
+      <div>
+        <label>Tipo</label>
+        <select id="o_tipo" multiple></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Data</label>
+        <input id="o_data" type="date">
+      </div>
+      <div>
+        <label>Parcela / Local</label>
+        <select id="o_parcela" multiple>
+          <option value="">—</option>
+          <option>Talhão 1</option><option>Talhão 2</option><option>Talhão 3</option><option>Talhão 4</option><option>Talhão 5</option><option>Talhão 6</option><option>Pomar</option>
+          <option>Estufa C1</option><option>Estufa C2</option><option>Estufa C3</option><option>Estufa C4</option>
+          <option>Estufa Germinação</option>
+          <option>Estufinho 1</option><option>Estufinho 2</option><option>Estufinho 3</option><option>Estufinho 4</option>
+        </select>
+      </div>
+      <div>
+        <label>Cultura (opcional)</label>
+        <select id="o_cultura" multiple></select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Medida / Quantidade / Duração (opcional)</label>
+        <input id="o_medida" placeholder="ex.: 2h; 3 sacos; 20 m²; 5 kg">
+      </div>
+      <div>
+        <label>Método (opcional)</label>
+        <input id="o_metodo" placeholder="ex.: manual; mecânica; trituração; mulching">
+      </div>
+    </div>
+
+    <label>Observações</label>
+    <textarea id="o_obs" placeholder="Notas, materiais, condições, resultados..."></textarea>
+
+    <label>Fotos (máx. 2)</label><input id="o_fotoInput" type="file" accept="image/*" multiple>
+    <div id="o_fotosEdicao"></div>
+
+    <div class="row" style="margin-top:10px">
+      <button onclick="o_guardar()">💾 Guardar</button>
+      <button class="sec" onclick="o_limpar()">🧽 Limpar</button>
+      <button class="warn" onclick="o_apagarSelecionados()">🗑️ Apagar marcados</button>
+    </div>
+    <div id="o_estado" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Registos</h3>
+    <div class="qc-filters" role="search" aria-label="Filtrar operações e tarefas">
+      <div><label for="qc_search_o">🔎 Pesquisar por nome / descrição</label><input id="qc_search_o" type="search" autocomplete="off" placeholder="Ex.: alface, tomate, talhão..." oninput="o_render()"></div>
+      <div><label for="qc_month_o">📅 Mês</label><input id="qc_month_o" type="month" onchange="o_render()"></div>
+      <button type="button" class="sec" onclick="qc_limparFiltros('o',o_render)">Ver todos</button>
+    </div>
+    <div id="o_lista"></div>
+  </div>
+</div>
+
+<!-- ===================== ROTAÇÃO ===================== -->
+<div id="view_rot" class="hidden">
+  <div class="card">
+    <h3>🔄 Motor de rotação de culturas</h3>
+    <div class="small">Consulta os registos de sementeira e plantação por parcela e ano, e cruza-os com o histórico manual. Prioriza famílias botânicas diferentes nos 3 anos anteriores. As sugestões são propostas de planeamento, não plantações automáticas.</div>
+    <div class="row" style="margin-top:10px">
+      <div><label for="rot_parcela">Parcela / Local</label><select id="rot_parcela" onchange="rot_atualizar()"></select></div>
+      <div><label for="rot_ano">Ano para planear</label><input id="rot_ano" type="number" min="1950" max="2100" onchange="rot_atualizar()"></div>
+      <div><label for="rot_mesPlano">Mês de plantação (opcional)</label><select id="rot_mesPlano" onchange="rot_atualizar()"><option value="">Sem mês definido</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+    </div>
+    <p id="rot_resumo" class="small"></p>
+    <h4>🌱 Sugestões de famílias e culturas</h4>
+    <div id="rot_sugestoes"></div>
+    <div class="small" style="margin-top:10px">Referência técnica: <a href="https://schenectady.cce.cornell.edu/gardening/food-gardening/rotating-vegetables-by-family" target="_blank" rel="noopener noreferrer">Cornell Cooperative Extension — Rotação por famílias</a>.</div>
+  </div>
+  <div class="card">
+    <h3>🗂️ Histórico anual da parcela</h3>
+    <div class="small">Os registos existentes do Caderno de Campo são consultados automaticamente (sem os duplicar). Registos manuais podem ser editados/apagados de forma independente.</div>
+    <div id="rot_historico" class="rot-table-wrap" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h3>📆 Mapa anual — todas as parcelas</h3>
+    <div class="small">Visão conjunta de culturas e famílias por parcela, construída a partir das operações e do histórico manual.</div>
+    <div class="row" style="margin-top:8px"><div><label for="rot_anoMapa">Ano do mapa</label><input id="rot_anoMapa" type="number" min="1950" max="2100" onchange="rot_atualizar()"></div></div>
+    <div id="rot_mapaAnual" class="rot-table-wrap" style="margin-top:10px"></div>
+  </div>
+  <div class="card" id="rot_editor">
+    <h3>➕ Adicionar / editar histórico de anos anteriores</h3>
+    <div class="row">
+      <div><label for="rot_anoManual">Ano</label><input id="rot_anoManual" type="number" min="1950" max="2100"></div>
+      <div><label for="rot_parcelaManual">Parcela</label><select id="rot_parcelaManual"></select></div>
+    </div>
+    <div class="row">
+      <div><label for="rot_familia">Família</label><select id="rot_familia" onchange="rot_atualizarEspecies()"></select></div>
+      <div><label for="rot_especie">Espécie</label><select id="rot_especie"></select></div>
+    </div>
+    <label for="rot_variedade">Variedade (opcional)</label><input id="rot_variedade" placeholder="Ex.: Red Salad Bowl">
+    <label for="rot_obs">Observações (opcional)</label><textarea id="rot_obs" placeholder="Ex.: ocupação anterior à criação do caderno digital"></textarea>
+    <div id="rot_estadoEdicao" class="small" role="status"></div>
+    <div class="row" style="margin-top:10px">
+      <button onclick="rot_guardarHistorico()">💾 Guardar histórico</button>
+      <button class="sec" onclick="rot_limparManual()">🧽 Limpar</button>
+    </div>
+  </div>
+</div>
+
+<div id="view_cal" class="hidden">
+  <div class="card">
+    <h3>🌙 Calendário agrícola e de fruticultura</h3>
+    <details class="qc-calendar-info" id="qcCalendarInfo" open>
+      <summary>ℹ️ Sobre as fases lunares e os cálculos</summary>
+      <div class="small">Fases lunares e categorias tradicionais Folha, Fruto, Raiz e Flor, sem signos. Inclui poda, estaquia, alporquia, enxertia, plantação e condução de fruteiras. Os cálculos usam <b>12:00 da hora dos Açores (Atlantic/Azores)</b>, com mudança verão/inverno automática; são aproximados e não reproduzem os dados diários do portal.</div>
+    </details>
+    <div class="row" style="margin-top:10px;align-items:flex-end">
+      <div><label for="calm_mes">Mês</label><input type="month" id="calm_mes" onchange="calm_abrirMes()"></div>
+      <div class="row" style="align-items:flex-end"><button class="sec" onclick="calm_navegar(-1)">◀ Anterior</button><button class="sec" onclick="calm_hoje()">Hoje</button><button class="sec" onclick="calm_navegar(1)">Seguinte ▶</button></div>
+    </div>
+    <div id="calm_dias" style="overflow-x:auto"></div>
+    <div id="calm_estado" class="small" role="status" style="margin:10px 0"></div>
+    <div id="calm_detalhe" class="calm-detalhe" style="margin-top:12px"></div>
+    <div class="small" style="margin-top:10px">Legenda: 🥬 Folha · 🍅 Fruto · 🥕 Raiz · 🌼 Flor · 🌑 Nova · 🌓 Crescente · 🌕 Cheia · 🌗 Minguante · ✅ Coincide com preferência lunar tradicional · 📌 Eventos .ics.</div>
+    <div class="calm-guide" style="margin-top:12px">
+      <h4 style="margin:0 0 6px">🌳 Trabalhos de fruticultura — época e Lua preferida (tradição)</h4>
+      <div class="small">A época e o estado da planta têm prioridade. A Lua crescente/minguante <b>não é o mesmo</b> que Lua ascendente/descendente. As indicações abaixo são tradicionais e não garantem melhor pegamento ou produção.</div>
+      <div id="calm_guiaTecnicas" style="overflow-x:auto;margin-top:8px"></div>
+    </div>
+    <div class="small" style="margin-top:8px">Referência para a Ilha das Flores: <a href="https://pt.rhythmofnature.net/calendario-jardineiro-n-azores" target="_blank" rel="noopener noreferrer">Rhythm of Nature — Calendário do Jardineiro · Açores</a> (fuso <b>Atlantic/Azores</b>). O calendário interno recalcula as fases e categorias aproximadas pela hora dos Açores, incluindo offline; <b>não importa nem reproduz automaticamente os horários exatos publicados no portal</b>. As preferências lunares para trabalhos de fruticultura são tradições de jardinagem, não critérios agronómicos comprovados.</div>
+    <div class="small" style="margin-top:8px">Referências técnicas para a fruticultura: <a href="https://extension.uga.edu/publications/detail.html?number=B1553" target="_blank" rel="noopener noreferrer">UGA — estaquia</a> · <a href="https://extension.oregonstate.edu/catalog/pnw-400-training-pruning-your-home-orchard" target="_blank" rel="noopener noreferrer">OSU — poda e condução</a> · <a href="https://extension.oregonstate.edu/ask-extension/featured/cherry-tree-grafting-how-when" target="_blank" rel="noopener noreferrer">OSU — enxertia</a>. Calendário técnico independente das interpretações lunares.</div>
+  </div>
+  <div class="card">
+    <h3>📅 Calendário (ficheiro .ics)</h3>
+    <div class="small">
+      Carrega um ficheiro <span class="kbd">.ics</span> para consultar eventos aqui. Se estiveres com um projeto (pasta) aberto, o calendário fica guardado na pasta do projeto.
+    </div>
+    <label style="margin-top:10px">Importar .ics</label>
+    <input type="file" id="cal_icsInput" accept=".ics,text/calendar">
+    <div class="row" style="margin-top:10px">
+      <button class="blue" onclick="cal_import()">⬆️ Importar calendário</button>
+      <button class="sec" onclick="cal_export()">⬇️ Exportar .ics</button>
+      <button class="warn" onclick="cal_clear()">🗑️ Limpar calendário</button>
+    </div>
+    <div id="cal_status" class="small" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h3>📌 Eventos</h3>
+    <div id="cal_list"></div>
+  </div>
+</div>
+
+<div id="view_rel" class="hidden">
+  <div class="card">
+    <h3>📄 Relatórios (Imprimir / Guardar em PDF)</h3>
+    <div class="qc-report-helper">Escolha os módulos a incluir. Pode criar relatórios de um só módulo ou combinações, incluindo histórico anual da rotação por parcela. Para guardar, escolha <b>Imprimir → Guardar como PDF</b>.</div>
+    <div class="small">
+      Escolhe um intervalo de datas e gera um relatório com cabeçalho do Quintal do Cravinho, resumo de atividade, secções organizadas e tabelas preparadas para impressão (campo + colheitas + fitofarm + operações/tarefas + notas + gestão €).
+      Depois usa <b>Imprimir</b> e escolhe <b>Guardar como PDF</b>.
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <div>
+        <label>De</label>
+        <input id="r_from" type="date">
+      </div>
+      <div>
+        <label>Até</label>
+        <input id="r_to" type="date">
+      </div>
+      <div>
+        <label>Incluir fotos</label>
+        <select id="r_photos">
+          <option value="no">Não</option>
+          <option value="yes">Sim (pode ficar pesado)</option>
+        </select>
+      </div>
+    </div>
+
+    <fieldset class="qc-report-options" id="r_seccoes">
+      <legend>📑 Escolher a informação do relatório</legend>
+      <div class="qc-report-checks">
+        <label><input type="checkbox" value="campo" checked> Culturas (resumo)</label>
+        <label><input type="checkbox" value="sementeiras" checked> Sementeiras</label>
+        <label><input type="checkbox" value="plantacoes" checked> Plantações</label>
+        <label><input type="checkbox" value="colheitas" checked> Colheitas</label>
+        <label><input type="checkbox" value="fito" checked> Fitofarmacêuticos</label>
+        <label><input type="checkbox" value="ops" checked> Operações e tarefas</label>
+        <label><input type="checkbox" value="notas" checked> Notas</label>
+        <label><input type="checkbox" value="fin" checked> Gestão €</label>
+        <label><input type="checkbox" value="rot" checked> Histórico de rotação por parcela</label>
+      </div>
+      <div class="row qc-report-actions"><button type="button" class="sec" onclick="rel_marcarSeccoes(true)">Selecionar todas</button><button type="button" class="sec" onclick="rel_marcarSeccoes(false)">Limpar seleção</button></div>
+      <label for="r_parcela">Parcela para o histórico de rotação</label>
+      <select id="r_parcela"><option value="">Todas as parcelas</option></select>
+      <div class="small">O relatório de Colheitas inclui datas por cultura e totais em gramas. Os registos anuais de rotação são incluídos pelos anos do período selecionado. As imagens de Ajudas Avelino permanecem disponíveis no separador Notas.</div>
+    </fieldset>
+
+    <div class="row" style="margin-top:10px">
+      <button class="blue" onclick="rel_print()">🖨️ Imprimir / PDF</button>
+      <button class="sec" onclick="rel_setDefaults()">↩️ Intervalo padrão</button>
+    </div>
+
+    <div id="r_hint" class="small" style="margin-top:10px"></div>
+
+  <div style="margin-top:16px; border-top:1px solid #e0e0e0; padding-top:12px">
+    <h4 style="margin:0 0 8px">🗓️ Mapa mensal</h4>
+    <div class="row">
+      <div>
+        <label>Mês</label>
+        <input id="r_month" type="month">
+      </div>
+      <div style="align-self:flex-end">
+        <button class="blue" onclick="rel_monthMap()">🗓️ Gerar mapa mensal (PDF)</button>
+      </div>
+    </div>
+    <div class="small" style="margin-top:6px">Gera um resumo por dia das secções escolhidas acima (sementeiras, plantações, colheitas, tratamentos, operações, notas e gestão); pode incluir o histórico anual de rotação. Para guardar em PDF, escolha Imprimir → Guardar como PDF.</div>
+  </div>
+  </div>
+</div>
+
+
+<div class="modal" id="imgModal" onclick="this.style.display='none'">
+  <img id="imgModalImg" alt="">
+</div>
+
+<script src="app.js"></script>
+<script>
+(function(){
+  const netEl = document.getElementById('netStatus');
+  let cacheReady = false;
+
+  function paint(){
+    if(!netEl) return;
+    const online = navigator.onLine;
+    const label = online ? 'Online' : 'Offline';
+    netEl.textContent = cacheReady ? (label + ' • Cache OK') : label;
+    // cores suaves (sem depender de classes externas)
+    if(online){
+      netEl.style.background = '#eef5ee';
+      netEl.style.borderColor = '#d7e7d8';
+      netEl.style.color = '#2e7d32';
+    } else {
+      netEl.style.background = '#fff3e0';
+      netEl.style.borderColor = '#ffd7a8';
+      netEl.style.color = '#b45309';
+    }
+  }
+
+  window.addEventListener('online', paint);
+  window.addEventListener('offline', paint);
+  paint();
+
+  // pedir armazenamento persistente (reduz risco de limpeza automática)
+  try {
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().then(() => {}).catch(() => {});
+    }
+  } catch(e){}
+
+  // Atualizar sem recarregar automaticamente: protege formulários ainda em edição.
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      const notice=document.getElementById('qcUpdateNotice');
+      if(notice) notice.hidden=false;
+    }, {once:true});
+  }
+
+  // ativar offline cache
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try{
+        const reg = await navigator.serviceWorker.register('./sw.js', {updateViaCache:'none'});
+        await navigator.serviceWorker.ready;
+        // Confirmar que os ficheiros principais estão guardados antes de indicar 'Cache OK'.
+        const cache = await caches.open('qc-bio-shell-v1.0.36');
+        cacheReady = !!(await cache.match(new URL('./index.html',location.href).href))
+                  && !!(await cache.match(new URL('./app.js',location.href).href));
+        paint();
+        // Procura atualizações quando o utilizador regressa à aplicação; não força recarregamentos.
+        window.addEventListener('online', () => reg.update().catch(()=>{}));
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') reg.update().catch(()=>{});
+        });
+      }catch(e){
+        console.log('Service Worker falhou:', e);
+      }
+    });
+  }
+})();
+</script>
+<script>
+/* ===================== MOBILE UI v1.0.32 ===================== */
+(function(){
+  const mq=window.matchMedia('(max-width:680px)');
+  const menu=document.getElementById('qcMobileMenu');
+  const shade=document.getElementById('qcMobileBackdrop');
+  const topButton=document.getElementById('qcMenuTop');
+  const moreButton=document.getElementById('qcBottomMore');
+  const files=document.getElementById('qcFiles');
+  const help=document.getElementById('qcHelp');
+  const calInfo=document.getElementById('qcCalendarInfo');
+  const links=document.getElementById('qcMobileMenuLinks');
+  let oldFocus=null;
+  const allTabs=[...document.querySelectorAll('.tabs>.tabbtn')].map(b=>({id:b.id.slice(4),title:b.textContent.trim()}));
+  function activeView(){return document.querySelector('.tabs>.tabbtn.active')?.id.slice(4)||'campo';}
+  function updateNav(){
+    const current=activeView();
+    document.querySelectorAll('[data-qc-view]').forEach(b=>{
+      const sel=b.dataset.qcView===current;
+      b.classList.toggle('qc-active',sel);
+      if(sel)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+    });
+    links.querySelectorAll('[data-qc-target]').forEach(b=>{
+      const sel=b.dataset.qcTarget===current;
+      b.classList.toggle('qc-active',sel);
+      if(sel)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+    });
+    const other=!['campo','plantacoes','colheitas'].includes(current);
+    moreButton.classList.toggle('qc-active',other);
+    if(other)moreButton.setAttribute('aria-current','page');else moreButton.removeAttribute('aria-current');
+    if(typeof window.qcSyncMobileSelections==='function')window.qcSyncMobileSelections();
+  }
+  function closeMenu(restore=true){
+    if(!menu||menu.hidden)return;
+    menu.hidden=true;shade.hidden=true;
+    menu.setAttribute('aria-hidden','true');menu.inert=true;
+    document.body.classList.remove('qc-menu-open');
+    topButton.setAttribute('aria-expanded','false');
+    moreButton.setAttribute('aria-expanded','false');
+    if(restore&&oldFocus?.focus)oldFocus.focus();
+  }
+  window.qcCloseMenu=closeMenu;
+  window.qcOpenMenu=function(){
+    if(!mq.matches)return;
+    oldFocus=document.activeElement;
+    menu.hidden=false;shade.hidden=false;menu.inert=false;
+    menu.setAttribute('aria-hidden','false');
+    document.body.classList.add('qc-menu-open');
+    topButton.setAttribute('aria-expanded','true');
+    moreButton.setAttribute('aria-expanded','true');
+    updateNav();
+    menu.querySelector('.qc-close')?.focus();
+  };
+  window.qcNavigate=function(name){
+    closeMenu(false);
+    if(typeof showTab==='function')showTab(name);
+    updateNav();
+    if(mq.matches)window.scrollTo(0,0);
+  };
+  window.qcOpenFileTools=function(){
+    closeMenu(false);files.open=true;files.scrollIntoView({block:'start'});files.querySelector('summary')?.focus();
+  };
+  window.qcOpenHelp=function(){
+    closeMenu(false);help.open=true;help.scrollIntoView({block:'start'});help.querySelector('summary')?.focus();
+  };
+  for(const tab of allTabs){
+    const b=document.createElement('button');b.type='button';b.dataset.qcTarget=tab.id;
+    b.textContent=tab.title;b.onclick=()=>qcNavigate(tab.id);links.appendChild(b);
+  }
+  function switchLayout(){
+    if(mq.matches){files.open=false;help.open=false;if(calInfo)calInfo.open=false;}
+    else{closeMenu(false);files.open=true;help.open=true;if(calInfo)calInfo.open=true;}
+    updateNav();
+  }
+  switchLayout();
+  mq.addEventListener?.('change',switchLayout);
+  window.addEventListener('qc:tab-change',updateNav);
+  document.addEventListener('keydown',e=>{
+    if(menu.hidden)return;
+    if(e.key==='Escape'){e.preventDefault();closeMenu();return;}
+    if(e.key!=='Tab')return;
+    const focusables=[...menu.querySelectorAll('button:not([disabled]),a[href],input:not([disabled])')].filter(x=>x.offsetParent!==null);
+    if(!focusables.length)return;
+    const first=focusables[0],last=focusables[focusables.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  });
+
+  // Seleção múltipla tátil: mantém o SELECT real e os eventos/valores da aplicação.
+  const controls=[];
+  function makeMultiSelect(sel){
+    const details=document.createElement('details');details.className='qc-mobile-multiselect';
+    const summary=document.createElement('summary');summary.textContent='Selecionar opções';
+    const panel=document.createElement('div');panel.className='qc-multi-panel';
+    details.append(summary,panel);sel.insertAdjacentElement('afterend',details);
+    sel.classList.add('qc-multi-source');
+    function count(){
+      const n=sel.selectedOptions.length;
+      summary.textContent=`Selecionar opções · ${n} ${n===1?'selecionada':'selecionadas'}`;
+    }
+    function render(){
+      panel.replaceChildren();
+      const options=[...sel.options].filter(o=>o.value!==''&&o.textContent.trim()!=='—');
+      if(!options.length){panel.textContent='Sem opções disponíveis.';return;}
+      let search=null;
+      if(options.length>10){
+        search=document.createElement('input');search.type='search';search.className='qc-multi-search';
+        search.placeholder='Pesquisar opções';search.setAttribute('aria-label','Pesquisar opções');panel.appendChild(search);
+      }
+      const list=document.createElement('div');list.className='qc-multi-list';panel.appendChild(list);
+      const rows=[];
+      options.forEach(opt=>{
+        const label=document.createElement('label');label.className='qc-multi-item';
+        const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=opt.selected;
+        checkbox.disabled=opt.disabled;checkbox.setAttribute('aria-label',opt.textContent.trim());
+        label.appendChild(checkbox);label.appendChild(document.createTextNode(opt.textContent.trim()));
+        checkbox.addEventListener('change',()=>{
+          opt.selected=checkbox.checked;
+          sel.dispatchEvent(new Event('change',{bubbles:true}));
+          count();
+        });
+        list.appendChild(label);rows.push(label);
+      });
+      if(search)search.addEventListener('input',()=>{
+        const q=search.value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+        for(const row of rows){
+          const txt=row.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+          row.hidden=!!q&&!txt.includes(q);
+        }
+      });
+      const footer=document.createElement('div');footer.className='qc-multi-footer';
+      const txt=document.createElement('span');txt.className='small';txt.textContent='Marque as opções desejadas.';
+      const clear=document.createElement('button');clear.type='button';clear.className='sec';clear.textContent='Limpar seleção';
+      clear.addEventListener('click',()=>{
+        [...sel.options].forEach(o=>{o.selected=false;});
+        sel.dispatchEvent(new Event('change',{bubbles:true}));count();render();
+      });
+      footer.append(txt,clear);panel.appendChild(footer);
+      count();
+    }
+    details.addEventListener('toggle',()=>{if(details.open)render();});
+    sel.addEventListener('change',()=>{count();});
+    controls.push({details,render,count});count();
+  }
+  document.querySelectorAll('select[multiple]').forEach(makeMultiSelect);
+  window.qcSyncMobileSelections=function(){
+    for(const c of controls){c.count();if(c.details.open)c.render();}
+  };
+  updateNav();
+})();
+</script>
+
+<script>
+/* v1.0.34 — instalação opcional, com fallback de instruções para iPhone */
+(function(){
+  const btn=document.getElementById('qcInstallBtn');
+  const status=document.getElementById('qcInstallStatus');
+  if(!btn||!status)return;
+  let pending=null;
+  const installed=()=>window.matchMedia('(display-mode:standalone)').matches || navigator.standalone===true;
+  const localFile=()=>location.protocol==='file:';
+  function updateStatus(){
+    if(installed()){
+      btn.hidden=true;
+      status.textContent='✅ Esta aplicação já está aberta no modo instalado.';
+    }else if(pending){
+      btn.hidden=false;
+      status.textContent='A aplicação está pronta para instalar. Use o botão Instalar ou o menu do navegador.';
+    }else if(localFile()){
+      btn.hidden=true;
+      status.textContent='⚠️ Está a abrir um ficheiro local. Publique a pasta num endereço HTTPS para permitir a instalação PWA.';
+    }else if(location.protocol!=='https:' && location.hostname!=='localhost' && location.hostname!=='127.0.0.1'){
+      btn.hidden=true;
+      status.textContent='⚠️ A instalação exige HTTPS (ou localhost em ambiente de teste).';
+    }else{
+      btn.hidden=true;
+      status.textContent='No Android, abra o menu do Chrome e selecione Instalar aplicação. No iPhone, use Partilhar → Adicionar ao ecrã principal.';
+    }
+  }
+  window.addEventListener('beforeinstallprompt',event=>{
+    event.preventDefault();
+    pending=event;
+    updateStatus();
+  });
+  btn.addEventListener('click',async()=>{
+    if(!pending)return;
+    const evt=pending;
+    pending=null;
+    btn.hidden=true;
+    try{
+      await evt.prompt();
+      await evt.userChoice;
+    }catch(e){console.warn('Instalação não iniciada:',e);}
+    updateStatus();
+  });
+  window.addEventListener('appinstalled',()=>{
+    pending=null;
+    updateStatus();
+  });
+  updateStatus();
+})();
+</script>
+
+</body>
+</html>

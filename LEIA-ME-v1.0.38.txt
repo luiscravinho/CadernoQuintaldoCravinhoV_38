@@ -1,0 +1,18 @@
+Caderno de Campo BIO — Quintal do Cravinho v1.0.38
+
+NOVIDADES
+- Plantações identificadas pelo número da cultura e da sementeira de origem (ex.: 10.2).
+- Referências de sementeira estáveis, armazenadas no metadado do projeto, sem alterar IDs.
+- Colheitas: pesquisa por nome e mês, abrangendo todas as culturas quando há filtros.
+- Relatório geral: datas de colheita por cultura e totais em gramas.
+- Notas: removida a criação de notas fixas; Ajudas Avelino como galeria de 20 páginas a partir do PDF fornecido.
+
+ATUALIZAR GITHUB PAGES
+1. Exporta primeiro um Backup ZIP dentro da versão anterior.
+2. Descompacta esta pasta e envia os ficheiros para a raiz do MESMO repositório GitHub Pages.
+3. Inclui app.js, index.html, sw.js, manifest.webmanifest, ícones e as 20 imagens ajudas-avelino-XX.webp.
+4. Confirma as alterações e volta a abrir o mesmo endereço. Se necessário, fecha e reabre a PWA.
+5. Verifica os registos e o modo offline, e conserva sempre uma cópia ZIP.
+
+Não publiques o backup agrícola no repositório público.
+Os dados no IndexedDB pertencem ao endereço/origem da aplicação; não migram automaticamente.

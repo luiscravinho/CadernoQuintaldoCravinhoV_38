@@ -1,0 +1,30 @@
+{
+  "id": "./",
+  "name": "Caderno de Campo BIO — Quintal do Cravinho",
+  "short_name": "Caderno BIO",
+  "description": "Caderno de Campo BIO do Quintal do Cravinho: culturas e sementeiras, plantações, colheitas, tratamentos, rotação anual por parcelas, calendário, notas e relatórios personalizados.",
+  "lang": "pt-PT",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f5",
+  "theme_color": "#2e7d32",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
